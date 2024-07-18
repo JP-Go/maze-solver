@@ -1,7 +1,5 @@
 from tkinter import Canvas
-from typing import Optional
-
-# from graphics.window import Window
+from typing import Self
 
 
 class Point:
@@ -36,10 +34,10 @@ class Cell:
         walls: tuple[bool, bool, bool, bool] = (True, True, True, True),
     ) -> None:
 
-        self._x1 = 0
-        self._y1 = 0
-        self._x2 = 0
-        self._y2 = 0
+        self._x1 = 0.0
+        self._y1 = 0.0
+        self._x2 = 0.0
+        self._y2 = 0.0
         (
             self.has_top_wall,
             self.has_right_wall,
@@ -69,3 +67,20 @@ class Cell:
             self._win.draw_line(
                 Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), "black"
             )
+
+    def __was_drawn(self):
+        return self._x1 != self._x2 and self._y1 != self._y2
+
+    def center_point(self) -> Point:
+        if not self.__was_drawn():
+            raise RuntimeError("Cell needs to be drawn first")
+        return Point((self._x1 + self._x2) / 2, (self._y1 + self._y2) / 2)
+
+    def draw_move(self, to_cell: Self, undo=True):
+        if not self.__was_drawn():
+            raise RuntimeError("Cell needs to be drawn first")
+        start_point = self.center_point()
+        end_point = to_cell.center_point()
+        color = "gray" if undo else "red"
+        self._win.draw_line(Line(start_point, end_point), color)
+
