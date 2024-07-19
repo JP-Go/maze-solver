@@ -119,3 +119,34 @@ class Maze:
 
     def _at_end(self, i: int, j: int):
         return i == self._num_cols - 1 and j == self._num_rows - 1
+
+    def solve(self):
+        self._animation_time = 0.02
+        return self._solve_r(0, 0)
+
+    def _solve_r(self, i: int, j: int):
+        self._animate()
+        current = self._cells[i][j]
+        current.visited = True
+        if self._at_end(i, j):
+            return True
+        directions = [
+            (i + 1, j, "right"),
+            (i - 1, j, "left"),
+            (i, j + 1, "bottom"),
+            (i, j - 1, "top"),
+        ]
+        for col, row, wall in directions:
+            if (
+                self._is_valid_cell(col, row)
+                and not self._visited(col, row)
+                and not self._has_wall_between(i, j, wall)
+            ):
+                neighbor = self._cells[col][row]
+                current.draw_move(neighbor)
+                is_solution = self._solve_r(col, row)
+                if is_solution:
+                    return True
+                else:
+                    current.draw_move(neighbor, undo=True)
+        return False
