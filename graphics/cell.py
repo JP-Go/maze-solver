@@ -1,29 +1,5 @@
-from tkinter import Canvas
-from typing import Self
-
-
-class Point:
-
-    def __init__(self, x: float, y: float) -> None:
-        self.x = x
-        self.y = y
-
-
-class Line:
-
-    def __init__(self, start_point: Point, end_point: Point) -> None:
-        self.start_point = start_point
-        self.end_point = end_point
-
-    def draw(self, canvas: Canvas, fill_color: str):
-        canvas.create_line(
-            self.start_point.x,
-            self.start_point.y,
-            self.end_point.x,
-            self.end_point.y,
-            fill=fill_color,
-            width=2,
-        )
+from .primitives import Line, Point
+from typing import Literal, Self
 
 
 class Cell:
@@ -45,28 +21,58 @@ class Cell:
             self.has_left_wall,
         ) = walls
         self._win = win
+        self._visited = False
 
     def draw(self, x1: float, y1: float, x2: float, y2: float):
         self._x1 = x1
         self._y1 = y1
         self._x2 = x2
         self._y2 = y2
+        if self._win is None:
+            return
         if self.has_top_wall:
             self._win.draw_line(
                 Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), "black"
+            )
+        else:
+            self._win.draw_line(
+                Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), "white"
             )
         if self.has_right_wall:
             self._win.draw_line(
                 Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), "black"
             )
+        else:
+            self._win.draw_line(
+                Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), "white"
+            )
         if self.has_bottom_wall:
             self._win.draw_line(
                 Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), "black"
+            )
+        else:
+            self._win.draw_line(
+                Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), "white"
             )
         if self.has_left_wall:
             self._win.draw_line(
                 Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), "black"
             )
+        else:
+            self._win.draw_line(
+                Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), "white"
+            )
+
+    def break_wall(self, wall: Literal["left", "right", "top", "bottom"]):
+        match wall:
+            case "left":
+                self.has_left_wall = False
+            case "right":
+                self.has_right_wall = False
+            case "top":
+                self.has_top_wall = False
+            case "bottom":
+                self.has_bottom_wall = False
 
     def __was_drawn(self):
         return self._x1 != self._x2 and self._y1 != self._y2
@@ -84,23 +90,8 @@ class Cell:
         color = "gray" if undo else "red"
         self._win.draw_line(Line(start_point, end_point), color)
 
-
-class Maze:
-
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win):
-        self.x1 = x1
-        self.y1 = y1
-        self.num_rows = num_rows
-        self.num_cols = num_cols
-        self.cell_size_x = cell_size_x
-        self.cell_size_y = cell_size_y
-        self.win = win
-
-    def _create_cells(self):
-        pass
-
-    def _draw_cell(self):
-        pass
-
-    def _animate(self):
-        pass
+    def __str__(self) -> str:
+        return (
+            f"Cell(x1={self._x1},x2={self._x2},y1={self._y1},y2={self._y2},"
+            f"walls=[top={self.has_top_wall},left={self.has_left_wall},bottom={self.has_bottom_wall},right={self.has_right_wall}])"
+        )

@@ -1,6 +1,6 @@
 from tkinter import Tk, BOTH, Canvas
 
-from .constructs import Line
+from .primitives import Line
 
 
 class Window:
@@ -24,6 +24,9 @@ class Window:
         self.__running = True
         while self.__running:
             self.redraw()
+
+    def bind_key(self, key, callback):
+        self.__root.bind(key, callback)
 
     def close(self):
         self.__running = False
