@@ -33,8 +33,11 @@ class Maze:
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
+        self._reset_visited_cells()
 
     def _create_cells(self):
+        if not self.__valid_maze():
+            raise ValueError("Maze must have at least 1 row and 1 column")
         for i in range(self._num_cols):
             col = []
             self._cells.append(col)
@@ -73,19 +76,22 @@ class Maze:
         self._cells[self._num_cols - 1][self._num_rows - 1].break_wall("right")
         self._draw_cell(self._num_cols - 1, self._num_rows - 1)
 
+    def __valid_maze(self):
+        return self._num_cols > 0 and self._num_rows > 0
+
     def _break_walls_r(self, i, j):
         current = self._cells[i][j]
-        current._visited = True
+        current.visited = True
         oposites = {"left": "right", "right": "left", "top": "bottom", "bottom": "top"}
         while True:
             to_visit: list[tuple[int, int, str]] = []
-            if i + 1 < self._num_cols and not self._cells[i + 1][j]._visited:
+            if i + 1 < self._num_cols and not self._cells[i + 1][j].visited:
                 to_visit.append((i + 1, j, "right"))
-            if i - 1 >= 0 and not self._cells[i - 1][j]._visited:
+            if i - 1 >= 0 and not self._cells[i - 1][j].visited:
                 to_visit.append((i - 1, j, "left"))
-            if j + 1 < self._num_rows and not self._cells[i][j + 1]._visited:
+            if j + 1 < self._num_rows and not self._cells[i][j + 1].visited:
                 to_visit.append((i, j + 1, "bottom"))
-            if j - 1 >= 0 and not self._cells[i][j - 1]._visited:
+            if j - 1 >= 0 and not self._cells[i][j - 1].visited:
                 to_visit.append((i, j - 1, "top"))
             if len(to_visit) == 0:
                 self._draw_cell(i, j)
@@ -96,3 +102,8 @@ class Maze:
                 oposites[new_direction[2]]
             )
             self._break_walls_r(new_direction[0], new_direction[1])
+
+    def _reset_visited_cells(self):
+        for col in self._cells:
+            for cell in col:
+                cell.visited = False

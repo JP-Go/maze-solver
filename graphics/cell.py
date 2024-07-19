@@ -21,7 +21,7 @@ class Cell:
             self.has_left_wall,
         ) = walls
         self._win = win
-        self._visited = False
+        self.visited = False
 
     def draw(self, x1: float, y1: float, x2: float, y2: float):
         self._x1 = x1
