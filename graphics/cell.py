@@ -74,6 +74,17 @@ class Cell:
             case "bottom":
                 self.has_bottom_wall = False
 
+    def has_wall(self, wall: Literal["left", "right", "top", "bottom"]):
+        match wall:
+            case "left":
+                return self.has_left_wall
+            case "right":
+                return self.has_right_wall
+            case "top":
+                return self.has_top_wall
+            case "bottom":
+                return self.has_bottom_wall
+
     def __was_drawn(self):
         return self._x1 != self._x2 and self._y1 != self._y2
 
@@ -82,7 +93,7 @@ class Cell:
             raise RuntimeError("Cell needs to be drawn first")
         return Point((self._x1 + self._x2) / 2, (self._y1 + self._y2) / 2)
 
-    def draw_move(self, to_cell: Self, undo=True):
+    def draw_move(self, to_cell: Self, undo=False):
         if not self.__was_drawn():
             raise RuntimeError("Cell needs to be drawn first")
         start_point = self.center_point()

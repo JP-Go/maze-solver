@@ -107,3 +107,15 @@ class Maze:
         for col in self._cells:
             for cell in col:
                 cell.visited = False
+
+    def _has_wall_between(self, i, j, wall):
+        return self._cells[i][j].has_wall(wall)
+
+    def _is_valid_cell(self, i: int, j: int):
+        return i >= 0 and i < self._num_cols and j >= 0 and j < self._num_rows
+
+    def _visited(self, i: int, j: int):
+        return self._cells[i][j].visited
+
+    def _at_end(self, i: int, j: int):
+        return i == self._num_cols - 1 and j == self._num_rows - 1
